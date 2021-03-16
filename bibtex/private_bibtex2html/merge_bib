@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ "$#" -le 2 ] ; then
+  echo "Usage: $0 [BIB_FILES...] OUTPUT_FILE" >&2
+  exit 1
+fi
+
+output="${@: -1}"
+touch $output
+while (( $# > 1 )) # Loop over all but the last parameter
+do
+  cat "$1" >> $output 
+  echo "" >> $output
+  shift
+done

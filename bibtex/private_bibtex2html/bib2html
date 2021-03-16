@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ "$#" -le 1 ] ; then
+  echo "Usage: $0 [BIB_FILES...] OUTPUT_FILE" >&2
+  exit 1
+fi
+
+my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+bib_files=${@:1:$#-1}
+output="${@: -1}"
+
+tmp_dir=$(mktemp -d)
+if [ "$#" -gt 2 ]; then
+  $my_dir/merge_bib $bib_files $tmp_dir/tmpbib.bib
+else
+  cat $bib_files > $tmp_dir/tmpbib.bib
+fi
+pybtex-format $tmp_dir/tmpbib.bib $output
+
+# Cleanup.
+rm $tmp_dir/tmpbib.bib
+# find -empty -delete fails on macOS for the tmp_dir. 
+# Lets just rely on the system's automated deletion rather than any fancy recursive deletions.
